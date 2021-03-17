@@ -3,7 +3,7 @@ import { GamesContext } from "./GamesContext";
 
 export default function ServerState(props) {
     
-    const [gamesState, setGamesState] = useState({date:"", arr: []});
+    const [gamesState, setGamesState] = useState({date:"", arr: [],favoriteArr: []});    
 
     let body = new URLSearchParams({
         dateFrom: gamesState.date,
@@ -19,11 +19,11 @@ export default function ServerState(props) {
         }
         let result = await info.json();
         console.log(result);
-        setGamesState({date: gamesState.date, arr: result.matches});
+        setGamesState({date: gamesState.date, arr: result.matches, favoriteArr: gamesState.favoriteArr});
     }
 
     function updateDate(newDate){
-        setGamesState({date: newDate, arr: gamesState.arr});
+        setGamesState({date: newDate, arr: gamesState.arr, favoriteArr: gamesState.favoriteArr});
     }
 
     
@@ -41,14 +41,22 @@ export default function ServerState(props) {
         }
         let result = await info.json();         
         
-    }    
+    } 
+    
+    function addToFavorite(elem){        
+        setGamesState({date: gamesState.date,  arr: gamesState.arr, favoriteArr: [...gamesState.favoriteArr, elem]});
+        console.log(elem);
+    }
+
     return (
         <GamesContext.Provider value={{
             fetchGames: fetchGames,
             getGame: getGame,
-            updateDate: updateDate,            
+            updateDate: updateDate,
+            addToFavorite: addToFavorite,            
             date:  gamesState.date,
-            arr:  gamesState.arr            
+            arr:  gamesState.arr,
+            favoriteArr: gamesState.favoriteArr            
         }}>
             {props.children}
         </GamesContext.Provider>

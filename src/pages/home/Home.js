@@ -1,4 +1,4 @@
-import Calendar from "../../components/calendar/Calendar";
+import CalendarComponent from "../../components/calendar/CalendarComponent";
 import GamesList from "../../components/gamesList/GamesList";
 
 
@@ -6,7 +6,7 @@ export default function Home() {
 
     return (
         <div>             
-            <Calendar></Calendar>          
+            <CalendarComponent></CalendarComponent>          
             <GamesList></GamesList>
         </div>
     )
