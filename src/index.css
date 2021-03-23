@@ -12,3 +12,22 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+
+.button-icon{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.button-icon:hover{
+  color: #ffc107;
+  
+}
+
+.card:hover{
+  cursor: pointer;
+  transform: translateY(2px);
+}

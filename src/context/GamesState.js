@@ -45,7 +45,7 @@ export default function ServerState(props) {
     
     function addToFavorite(elem){        
         setGamesState({date: gamesState.date,  arr: gamesState.arr, favoriteArr: [...gamesState.favoriteArr, elem]});
-        console.log(elem);
+        
     }
 
     return (
