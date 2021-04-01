@@ -1,13 +1,18 @@
-import { useState } from "react";
+import { useState, useReducer } from "react";
 import { GamesContext } from "./GamesContext";
+import moment from 'moment';
+import reducer from "./GameReducer";
+
 
 export default function ServerState(props) {
-    
-    const [gamesState, setGamesState] = useState({date:"", arr: [],favoriteArr: []});    
+
+    const [gamesState, gamesDispach] = useReducer(reducer,{ date: new moment(), arr: [], favoriteArr: [] });
+
+    // const [gamesState, setGamesState] = useState({date: new moment(), arr: [],favoriteArr: []});    
 
     let body = new URLSearchParams({
-        dateFrom: gamesState.date,
-        dateTo: gamesState.date,        
+        dateFrom: gamesState.date.format('YYYY-MM-DD'),
+        dateTo: gamesState.date.format('YYYY-MM-DD'),
     })
 
     async function fetchGames() {
@@ -19,14 +24,27 @@ export default function ServerState(props) {
         }
         let result = await info.json();
         console.log(result);
-        setGamesState({date: gamesState.date, arr: result.matches, favoriteArr: gamesState.favoriteArr});
+        gamesDispach({type:'FETCH', payload: result.matches});
     }
 
-    function updateDate(newDate){
-        setGamesState({date: newDate, arr: gamesState.arr, favoriteArr: gamesState.favoriteArr});
+    function updateDate(newDateStr) {
+        let newDate = new moment(newDateStr);
+        gamesDispach({type:'UPDATE_DATE', payload: newDate});
     }
 
-    
+    function nextDay() {
+        let newDate = gamesState.date.clone().add(1, 'days');
+        gamesDispach({type:'UPDATE_DATE', payload: newDate});
+    }
+
+    function prevDay() {
+        let newDate = gamesState.date.clone().subtract(1, 'days');
+        gamesDispach({type:'UPDATE_DATE', payload: newDate});
+    }
+
+
+    // date.clone().subtract(1,'days').format('YYYY-MM-DD')
+
 
     async function getGame(id) {
         let info = await fetch("http://f0464737.xsph.ru.xsph.ru/notes/add_note.php", {
@@ -39,24 +57,27 @@ export default function ServerState(props) {
         if (!info.ok) {
             throw new Error(info.status)
         }
-        let result = await info.json();         
-        
-    } 
-    
-    function addToFavorite(elem){        
-        setGamesState({date: gamesState.date,  arr: gamesState.arr, favoriteArr: [...gamesState.favoriteArr, elem]});
-        
+        let result = await info.json();
+
     }
+
+    function addToFavorite(elem) {
+        gamesDispach({type:'ADD_TO_FAVORITE', payload: elem});
+
+    }
+
 
     return (
         <GamesContext.Provider value={{
             fetchGames: fetchGames,
             getGame: getGame,
             updateDate: updateDate,
-            addToFavorite: addToFavorite,            
-            date:  gamesState.date,
-            arr:  gamesState.arr,
-            favoriteArr: gamesState.favoriteArr            
+            addToFavorite: addToFavorite,
+            nextDay: nextDay,
+            prevDay: prevDay,
+            date: gamesState.date,
+            arr: gamesState.arr,
+            favoriteArr: gamesState.favoriteArr
         }}>
             {props.children}
         </GamesContext.Provider>
